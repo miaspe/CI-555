@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>555 - Astável</title>
+  <link rel="stylesheet" href="555 - Astavel.css">
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      
+      <h1>555 - Astável</h1>
+      <p>Aperte F5 pra zerar tudo e recalcular ou simplesmente digite por cima e clique em calcular</p>
+      
+      <h4>Calcular frequência:</h4>
+    
+      <form id="frequencyForm">
+        <label for="r1Input">Valor de R1 (Ω):</label>
+        <input type="number" id="r1Input" required min="0">
+        
+        <label for="r2Input">Valor de R2 (Ω):</label>
+        <input type="number" id="r2Input" required min="0">
+        
+        <label for="cInput">Valor do Cap:</label>
+        <input type="number" id="cInput" required min="0">
+        <select id="cUnit">
+          <option value="0.001">mili (mF)</option>
+          <option value="0.000001">micro (µF)</option>
+          <option value="0.000000001">nano (nF)</option>
+          <option value="0.000000000001">pico (pF)</option>
+        </select>
+        
+        <button type="submit">Calcular freq e Duty Cycle</button>
+      </form>
+      
+      <!--<p id="result"></p>-->
+    </div>
+
+    <div class="row">
+      <h4>Calcular Capacitor e Duty Cycle:</h4>
+
+      <form id="calculateCapacitorForm">
+        <label for="r1FrequencyInput">Valor de R1 (Ω):</label>
+        <input type="number" id="r1FrequencyInput" required min="0">
+        
+        <label for="r2FrequencyInput">Valor de R2 (Ω):</label>
+        <input type="number" id="r2FrequencyInput" required min="0">
+        
+        <label for="frequencyInput">Frequência (Hz):</label>
+        <input type="number" id="frequencyInput" required min="0">
+        
+        <button type="submit">Calcular Capacitor e Duty Cycle</button>
+      </form>
+      
+      <p id="capacitorResult"></p>
+      <p id="dutyCycleResult"></p>
+    </div>
+
+    <div class="row">
+      <h4>Calcular Resistores e Duty Cycle:</h4>
+
+      <form id="calculateResistorsForm">
+        <label for="capacitorInput">Valor do Cap:</label>
+        <input type="number" id="capacitorInput" required min="0">
+        <select id="capUnit">
+          <option value="0.001">mili (mF)</option>
+          <option value="0.000001">micro (µF)</option>
+          <option value="0.000000001">nano (nF)</option>
+          <option value="0.000000000001">pico (pF)</option>
+        </select>
+        <label for="frequencyInput2">Frequência (Hz):</label>
+        <input type="number" id="frequencyInput2" required min="0">
+
+    <button type="submit">Calcular Resistores e Duty Cycle</button>
+  </form>
+  
+  <p id="r1Result"></p>
+  <p id="r2Result"></p>
+  <p id="dutyCycleResult2"></p>
+  </div>
+  <div class="row">
+    <h4>Resultado</h4>
+    
+    <!--<p id="result"></p>-->
+    
+    <p id="capacitorResult"></p>
+    <p id="dutyCycleResult"></p>
+    
+    <p id="r1Result"></p>
+    <p id="r2Result"></p>
+    <p id="dutyCycleResult2"></p>
+
+  </div>
+
+  <script>
+    const form = document.getElementById('frequencyForm');
+    const calculateCapacitorForm = document.getElementById('calculateCapacitorForm');
+    const calculateResistorsForm = document.getElementById('calculateResistorsForm');
+    const resultElement = document.getElementById('result');
+    const capacitorResultElement = document.getElementById('capacitorResult');
+    const dutyCycleResultElement = document.getElementById('dutyCycleResult');
+    const r1ResultElement = document.getElementById('r1Result');
+    const r2ResultElement = document.getElementById('r2Result');
+    const dutyCycleResultElement2 = document.getElementById('dutyCycleResult2');
+    
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      const r1 = parseFloat(document.getElementById('r1Input').value);
+      const r2 = parseFloat(document.getElementById('r2Input').value);
+      const c = parseFloat(document.getElementById('cInput').value);
+      const cUnit = parseFloat(document.getElementById('cUnit').value);
+      
+      const cValue = c * cUnit;
+      const frequency = 1.44 / ((r1 + 2 * r2) * cValue);
+      const dutyCycle = ((r1 + r2) / (r1 + 2 * r2)) * 100;
+      
+      resultElement.innerHTML = 'Frequência: ' + frequency.toFixed(2) + ' Hz<br>Duty Cycle: ' + dutyCycle.toFixed(2) + '%';
+    });
+
+    calculateCapacitorForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const r1 = parseFloat(document.getElementById('r1FrequencyInput').value);
+      const r2 = parseFloat(document.getElementById('r2FrequencyInput').value);
+      const frequency = parseFloat(document.getElementById('frequencyInput').value);
+
+      const cValue = 1.44 / (frequency * (r1 + 2 * r2));
+      const dutyCycle = ((r1 + r2) / (r1 + 2 * r2)) * 100;
+
+      capacitorResultElement.innerHTML = 'Valor do Capacitor: ' + cValue.toFixed(2) + ' F';
+      dutyCycleResultElement.innerHTML = 'Duty Cycle: ' + dutyCycle.toFixed(2) + '%';
+    });
+
+    calculateResistorsForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const c = parseFloat(document.getElementById('capacitorInput').value);
+      const frequency = parseFloat(document.getElementById('frequencyInput2').value);
+      const capUnit = parseFloat(document.getElementById('capUnit').value);
+
+      const cValue = c * capUnit;
+      const r1Value = (1.44 / (frequency * cValue)) - 2;
+      const r2Value = (1.44 / (frequency * cValue)) - r1Value;
+      const dutyCycle = ((r1Value + r2Value) / (r1Value + 2 * r2Value)) * 100;
+
+      r1ResultElement.innerHTML = 'Valor de R1: ' + r1Value.toFixed(2) + ' Ω';
+      r2ResultElement.innerHTML = 'Valor de R2: ' + r2Value.toFixed(2) + ' Ω';
+      dutyCycleResultElement2.innerHTML = 'Duty Cycle: ' + dutyCycle.toFixed(2) + '%';
+    });
+  </script>
+</body>
+<footer>
+  Valores de Resistores Comerciais:| 1,0 | 1,1 | 1,2 | 1,3 | 1,5 | 1,6 | 1,8 | 2,0 | 2,2 | 2,4 | 2,7 | 3,0 | 3,3 | 3,6 | 3,9 | 4,3 | 4,7 | 5,1 | 5,6 | 6,2 | 6,8 | 7,5 | 8,2 | 9,1|
+</footer>
+</html>
